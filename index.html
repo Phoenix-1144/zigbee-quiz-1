@@ -3,7 +3,83 @@
 <head>
   <meta charset="UTF-8">
   <title>Zigbee協議智能學習夥伴【鳳凰老師】</title>
-  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      font-family: "Microsoft JhengHei", Arial, sans-serif;
+      background-color: #f9f9f9;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+    }
+    .quiz-container {
+      background: #fff;
+      margin-top: 40px;
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      width: 90%;
+      max-width: 600px;
+      text-align: center;
+    }
+    h1 {
+      font-size: 22px;
+      margin-bottom: 10px;
+    }
+    .progress {
+      height: 20px;
+      background: #eee;
+      border-radius: 10px;
+      overflow: hidden;
+      margin: 20px 0;
+    }
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: #4caf50;
+      transition: width 0.3s;
+    }
+    .question {
+      font-size: 18px;
+      margin: 20px 0;
+    }
+    .options {
+      display: grid;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .option {
+      padding: 12px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      background: #f4f4f4;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .option:hover {
+      background: #eaeaea;
+    }
+    .feedback {
+      font-size: 16px;
+      margin: 10px 0;
+      min-height: 40px;
+    }
+    .next-btn {
+      padding: 12px 24px;
+      background: #2196f3;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      cursor: pointer;
+      display: none;
+    }
+    .next-btn:hover {
+      background: #1976d2;
+    }
+  </style>
 </head>
 <body>
   <div class="quiz-container">
@@ -12,15 +88,244 @@
     <div class="question" id="question">按「開始測驗」來進行</div>
     <div class="options" id="options"></div>
     <div class="feedback" id="feedback"></div>
-    <div class="controls">
-      <button class="btn" id="startBtn" onclick="startQuiz()">開始測驗</button>
-      <button class="btn" id="nextBtn" style="display:none" onclick="nextQuestion()">下一題</button>
-      <button class="btn success" id="restartBtn" style="display:none" onclick="startQuiz()">再玩一次</button>
-    </div>
+    <button class="next-btn" id="nextBtn" onclick="nextQuestion()">下一題</button>
+    <button class="next-btn" id="restartBtn" style="background:#4caf50; display:none;" onclick="startQuiz()">再玩一次</button>
+    <br><br>
+    <button class="next-btn" style="display:block; background:#ff9800;" onclick="startQuiz()">開始測驗</button>
   </div>
 
-  <!-- ✅ 在這裡引入 JS 檔案 -->
-  <script src="questions.js"></script>
-  <script src="script.js"></script>
+  <script>
+    // ===== 題庫（可擴充到 20 題以上） =====
+    const allQuestions = [
+       //1
+      {
+        q: "ZigBee 協議主要是基於哪個標準所建立？",
+        options: ["A. IEEE 802.15.4", "B. IEEE 802.11", "C. Bluetooth 5.0", "D. LoRaWAN"],
+        answer: 0,
+        explain: "ZigBee 是建立在 IEEE 802.15.4 的低功耗 WPAN 標準上。"
+      },
+      //2
+      {
+        q: "ZigBee 名稱的靈感來源是？",
+        options: ["A. 螞蟻搬運", "B. 蜜蜂舞蹈與振翅", "C. 蝴蝶遷徙", "D. 蜻蜓飛行"],
+        answer: 1,
+        explain: "名稱來自蜜蜂（Bee）的 Zigzag 舞步與翅膀震動傳遞資訊。"
+      },
+      //3
+      {
+        q: "哪個應用設定檔用於家庭自動化？",
+        options: ["A. ZLL", "B. ZBA", "C. ZHC", "D. ZHA"],
+        answer: 3,
+        explain: "ZHA（Home Automation）專為家庭自動化設計。"
+      },
+      //4
+      {
+        q: "ZigBee 的典型特徵是？",
+        options: ["A. 高速影音串流", "B. 低功耗、低速率、短距離", "C. 長距離百公里傳輸", "D. 即時 8K 視訊"],
+        answer: 1,
+        explain: "ZigBee 特點是低功耗、低速率、短距離。"
+      },
+     // 5
+     {
+   	 q: "哪個版本開始同時支援 2.4GHz 與 sub-GHz 並強化網路擴展性？",
+    	options: ["A. ZigBee 1.0", "B. ZigBee 1.1", "C. ZigBee Pro", "D. ZigBee 3.0"],
+   	 answer: 2,
+   	 explain: "ZigBee Pro 帶來更多頻段與網路管理的優化。"
+     },
+	//6
+      {
+        q: "ZigBee 3.0 的主要貢獻是？",
+        options: ["A. 改用 Wi-Fi 實體層", "B. 統一應用層協議提升互通性", "C. 移除 Mesh", "D. 僅支援 sub-GHz"],
+        answer: 1,
+        explain: "ZigBee 3.0 統一 ZHA、ZLL 等協議，互通性更佳。"
+      },
+	//7
+      {
+   	 q: "ZigBee 1.1 相較 1.0 的重要改進是？",
+    	options: ["A. 引入叢集庫（Cluster Library）", "B. 支援 5G 頻段", "C. 取消 Mesh", "D. 強制使用 Wi-Fi"],
+    	answer: 0,
+    	explain: "1.1 引入叢集庫，支援屬性回報與即時更新。"
+ 	 },
+	// 8
+  {
+    q: "哪個設定檔主要針對照明裝置（燈泡、開關、調光）？",
+    options: ["A. ZLL", "B. ZBA", "C. ZHC", "D. RF4CE"],
+    answer: 0,
+    explain: "ZLL（Light Link）聚焦於照明控制。"
+  },
+  // 9
+  {
+    q: "哪個設定檔面向商業與工業建築（大型樓宇）？",
+    options: ["A. ZHA", "B. ZBA", "C. ZHC", "D. Green Power"],
+    answer: 1,
+    explain: "ZBA（Building Automation）用於照明、HVAC、門禁等。"
+  },
+  // 10
+  {
+    q: "哪個設定檔應用於醫療照護情境？",
+    options: ["A. ZHC", "B. ZHA", "C. ZLL", "D. ZBA"],
+    answer: 0,
+    explain: "ZHC（Health Care）支援醫療設備監控與遠距照護。"
+  },
+  // 11
+  {
+    q: "ZigBee 終端設備（End Device）必須連接到哪類父節點？",
+    options: ["A. 僅協調器", "B. 僅路由器", "C. 協調器或路由器皆可", "D. 任意裝置"],
+    answer: 2,
+    explain: "End Device 需連接父節點（協調器或路由器）。"
+  },
+  // 12
+  {
+    q: "ZigBee 網路在路徑選擇上優先考量？",
+    options: ["A. 最低延遲", "B. 最低丟包率", "C. 最高吞吐", "D. 最短跳數"],
+    answer: 1,
+    explain: "文件提到優先考慮最低丟包率原則。"
+  },
+  // 13
+  {
+    q: "節點離網時，子節點可透過何種機制重新加入？",
+    options: ["A. 手動配對", "B. 自癒機制", "C. 固定路由", "D. DHCP 更新"],
+    answer: 1,
+    explain: "ZigBee 具自癒能力，會尋找替代父節點。"
+  },
+  // 14
+  {
+    q: "RF4CE 主要針對哪類應用？",
+    options: ["A. 穿戴式醫療", "B. 家電遙控", "C. 工業感測", "D. 車聯網"],
+    answer: 1,
+    explain: "RF4CE 以射頻取代紅外線，適合消費性家電遙控。"
+  },
+  // 15
+  {
+    q: "Green Power 技術的目標是？",
+    options: ["A. 高解析影音串流", "B. 能源回收以支援超低功耗裝置", "C. 跨網域路由", "D. 安全加密替代"],
+    answer: 1,
+    explain: "透過能量收集支援無電池或長待機裝置。"
+  },
+  // 16
+  {
+    q: "下列何者不是 ZigBee 常見應用？",
+    options: ["A. 智慧照明", "B. 自動抄表", "C. 高帶寬 4K 串流", "D. 環境監控"],
+    answer: 2,
+    explain: "ZigBee 不適合高帶寬影音串流。"
+  },
+  // 17
+  {
+    q: "哪些條件特別適合導入 ZigBee？",
+    options: ["A. 多點位、小資料量、成本敏感", "B. 高頻寬、低延遲遊戲", "C. 百公里長距離", "D. 即時 8K 視訊"],
+    answer: 0,
+    explain: "ZigBee 擅長多節點、低資料量、低功耗且成本友善的場景。"
+  },
+  // 18
+  {
+    q: "哪家公司推出具 Secure Vault 等級的超低功耗 ZigBee SoC（文件舉例）？",
+    options: ["A. Silicon Labs", "B. NXP", "C. Nordic", "D. TI"],
+    answer: 0,
+    explain: "文件舉例 Silicon Labs 多款 SoC 具 PSALevel3 SecureVault。"
+  },
+  // 19
+  {
+    q: "下列哪個不是 ZigBee 產品開發流程中提到的步驟？",
+    options: ["A. 選擇設備類型", "B. 選擇晶片平台", "C. 撰寫 iOS App", "D. 取得 ZigBee 認證"],
+    answer: 2,
+    explain: "流程包含設備類型、晶片平台、屬性/行為與認證等。"
+  },
+   //20   
+ 
+ {
+        q: "ZigBee 網路拓樸不包括以下哪一種？",
+        options: ["A. 星狀", "B. 網狀", "C. 匯流排", "D. 樹狀"],
+        answer: 2,
+        explain: "ZigBee 支援星狀、樹狀與網狀拓樸，不支援匯流排。"
+      },
+ //21
+      {
+        q: "ZigBee 的終端設備 (End Device) 必須連接到？",
+        options: ["A. 只能連協調器", "B. 只能連路由器", "C. 協調器或路由器皆可", "D. 任意裝置"],
+        answer: 2,
+        explain: "End Device 必須連接到協調器或路由器。"
+      }
+    ];
+
+    // ===== 可調參數 =====
+    const NUM_QUESTIONS = 10; // 每次抽幾題
+
+    let quizQuestions = [];
+    let currentIndex = 0;
+    let score = 0;
+
+    function startQuiz() {
+      quizQuestions = shuffle([...allQuestions]).slice(0, NUM_QUESTIONS);
+      currentIndex = 0;
+      score = 0;
+      document.getElementById("restartBtn").style.display = "none";
+      document.getElementById("feedback").innerText = "";
+      showQuestion();
+    }
+
+    function showQuestion() {
+      const qObj = quizQuestions[currentIndex];
+      document.getElementById("question").innerText = qObj.q;
+      const optionsDiv = document.getElementById("options");
+      optionsDiv.innerHTML = "";
+      qObj.options.forEach((opt, idx) => {
+        const btn = document.createElement("div");
+        btn.className = "option";
+        btn.innerText = opt;
+        btn.onclick = () => checkAnswer(idx, qObj);
+        optionsDiv.appendChild(btn);
+      });
+      updateProgress();
+    }
+
+    function checkAnswer(idx, qObj) {
+      const feedback = document.getElementById("feedback");
+      if (idx === qObj.answer) {
+        score++;
+        feedback.innerText = "✅ 答對了！" + qObj.explain;
+        feedback.style.color = "green";
+      } else {
+        feedback.innerText = "❌ 答錯囉！" + qObj.explain;
+        feedback.style.color = "red";
+      }
+      document.getElementById("nextBtn").style.display = "inline-block";
+      Array.from(document.getElementsByClassName("option"))
+        .forEach(el => el.style.pointerEvents = "none");
+    }
+
+    function nextQuestion() {
+      currentIndex++;
+      document.getElementById("nextBtn").style.display = "none";
+      document.getElementById("feedback").innerText = "";
+      if (currentIndex < quizQuestions.length) {
+        showQuestion();
+      } else {
+        endQuiz();
+      }
+    }
+
+    function endQuiz() {
+      document.getElementById("question").innerText =
+        `測驗結束！你的分數：${score} / ${quizQuestions.length}`;
+      document.getElementById("options").innerHTML = "";
+      document.getElementById("nextBtn").style.display = "none";
+      document.getElementById("restartBtn").style.display = "inline-block";
+      updateProgress(true);
+    }
+
+    function updateProgress(end=false) {
+      const bar = document.getElementById("progressBar");
+      const percent = end ? 100 : ((currentIndex) / quizQuestions.length) * 100;
+      bar.style.width = percent + "%";
+    }
+
+    function shuffle(arr) {
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+  </script>
 </body>
 </html>
