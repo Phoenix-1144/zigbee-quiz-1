@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <title>Zigbee協議智能學習夥伴【鳳凰老師】</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="quiz-container">
+    <h1>114-1 Zigbee協議智能學習夥伴【鳳凰老師】</h1>
+    <div class="progress"><div class="progress-bar" id="progressBar"></div></div>
+    <div class="question" id="question">按「開始測驗」來進行</div>
+    <div class="options" id="options"></div>
+    <div class="feedback" id="feedback"></div>
+    <div class="controls">
+      <button class="btn" id="startBtn" onclick="startQuiz()">開始測驗</button>
+      <button class="btn" id="nextBtn" style="display:none" onclick="nextQuestion()">下一題</button>
+      <button class="btn success" id="restartBtn" style="display:none" onclick="startQuiz()">再玩一次</button>
+    </div>
+  </div>
+
+  <!-- ✅ 在這裡引入 JS 檔案 -->
+  <script src="questions.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
